@@ -9,8 +9,13 @@ containerGallery.addEventListener("click", openOriginalImg);
 const markup = galleryItems.reduce((acc, { preview, original, description }) =>
     acc +
     `
- <li>
-   <img src="${preview}" alt="${description}" data-source="${original}" loading="lazy" width="350">
+ <li class="gallery__item">
+  <a class="gallery__link" href="${original}">
+   <img  class="gallery__image"
+    src="${preview}"
+     alt="${description}" 
+     data-source="${original}" loading="lazy" width="350">
+     </a>
  </li>
  `,
     ""
@@ -20,7 +25,16 @@ containerGallery.insertAdjacentHTML('beforeend', markup);
 
 const instance = basicLightbox.create(`
     <img  width="1280" height="600">
-`)
+`,
+    {
+        onShow: (instance) => {
+            window.addEventListener('keydown', onEscKeyPress);
+        },
+        onClose: (instance) => {
+            window.removeEventListener('keydown', onEscKeyPress);
+        },
+    }
+);
 
 function openOriginalImg(e) {
 
@@ -29,5 +43,10 @@ function openOriginalImg(e) {
     if (!datasetSource) return;
     instance.element().querySelector('img').src = datasetSource;
     instance.show();
-    console.dir(e);
+    //   console.dir(e);
 };
+
+function onEscKeyPress(e) {
+    if (e.code !== 'Escape') return;
+    instance.close();
+}
